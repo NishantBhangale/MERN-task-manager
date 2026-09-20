@@ -1,0 +1,49 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: secure-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: mernapp
+    ports:
+      - "27017:27017"
+    volumes:
+      - tm-mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - to-do-net
+  
+  backend:
+    build: ./backend
+    container_name: mern-backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - to-do-net 
+  frontend:
+    build: ./frontend
+    container_name: mern-frontend
+    ports:
+      - "8081:80"
+    depends_on:
+     - backend
+    networks:
+      - to-do-net
+volumes:
+  tm-mongo-data:
+    name: tm-mongo-data
+networks:
+  to-do-net:
+    name: to-do-net
+    driver: bridge
