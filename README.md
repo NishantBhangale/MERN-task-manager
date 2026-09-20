@@ -376,7 +376,7 @@ mern-task-manager-backend:latest
 mern-task-manager-frontend:latest
 ```
 
-The frontend image is kept smaller by using Nginx to serve the production build.
+The frontend image is kept smaller by using Nginx to serve the production build. (95mb)
 
 ---
 
